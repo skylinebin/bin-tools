@@ -1,16 +1,19 @@
 import Head from "next/head";
 import * as React from "react";
 import { useCallback, useRef, useState } from "react";
+import { HighlightWithinTextarea } from 'react-highlight-within-textarea'
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import Clipboard from "clipboard";
 import styles from "../../styles/Home.module.css";
-import charStyles from "../../styles/char.module.css";
-import { CharType, convertCharCode } from "../../src/utils/charcode";
+import halfStyles from "../../styles/half.module.css";
+import { CharType, convertLabelCharCode } from "../../src/utils/charcode";
 
 export default function Home() {
   const [textInput, setTextInput] = useState("");
+  const [afterTextInput, setAfterTextInput] = useState("");
+  const [highlights, setHighlights] = useState([]);
 
   const [open, setOpen] = useState(false);
 
@@ -22,13 +25,28 @@ export default function Home() {
     setOpen(false);
   };
 
-  const handleConvertClick = useCallback(() => {
-    const convertValue = convertCharCode(textInput, CharType.HalfToFull);
-    setTextInput(convertValue);
-  }, [textInput]);
+  const handleConvertClick = useCallback((val: string) => {
+    const { str, list } = convertLabelCharCode(val, CharType.HalfToFull);
+    const hs = [];
+    list.map((item) => hs.push([item,item+1]));
+    setHighlights([...hs]);
+    setAfterTextInput(str);
+  }, []);
 
   const handleTextInputChange = (event) => {
     setTextInput(event.target.value);
+    setTimeout(()=>{
+        handleConvertClick(event.target.value);
+    }, 100);
+  };
+
+  const handleBtnClick = useCallback(() =>{
+    handleConvertClick(textInput);
+  }, [textInput]);
+
+
+  const handleAfterTextInputChange = (event) => {
+    setAfterTextInput(event);
   };
   const handleCopyClick = useCallback(() => {
     const copy = new Clipboard(".copy-btn");
@@ -46,81 +64,86 @@ export default function Home() {
   }, []);
 
   return (
-    <div className={charStyles.container}>
+    <div className={halfStyles.container}>
       <Head>
-        <title>全角半角转换器</title>
+        <title>快来帮小朋友揪出所有半角符号吧~</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
-        <h1 className={charStyles.title}>全角半角转换器</h1>
-        <div>
+        <h1 className={halfStyles.title}>揪出所有半角符号</h1>
+        <div className={halfStyles.texts}>
           <TextField
             // inputRef={valRef}
             id="outlined-multiline-static"
-            label="待转换内容"
-            className={charStyles.text}
+            label="Before"
+            className={halfStyles.text}
             multiline
-            rows={20}
-            min-rows={20}
+            rows={25}
+            min-rows={25}
             value={textInput}
             onChange={handleTextInputChange}
+            color="secondary"
           />
+          <div className={halfStyles.textRight}>
+            <HighlightWithinTextarea
+                value={afterTextInput}
+                highlight={highlights}
+                placeholder=""
+                readOnly={true}
+                // onChange={handleAfterTextInputChange}
+            />
+          </div>
         </div>
-        <div className={charStyles.buttons}>
+        <div className={halfStyles.buttons}>
           <Button
-            variant="contained"
-            color="success"
-            onClick={handleConvertClick}
-            className={charStyles.button}
-          >
-            半角转全角
-          </Button>
-          <Button
-            data-clipboard-text={textInput}
             variant="contained"
             color="info"
+            onClick={handleBtnClick}
+            className={halfStyles.button}
+          >
+            快揪出它(´・ω・`)
+          </Button>
+          <Button
+            data-clipboard-text={afterTextInput}
+            variant="contained"
+            color="secondary"
             onClick={handleCopyClick}
-            className={`${charStyles.copybutton} copy-btn`}
+            className={`${halfStyles.copybutton} copy-btn`}
             style={{
               marginLeft: '20px'
             }}
           >
-            复制
+            复制成稿 ♡.∩▂∩.♡ 
           </Button>
         </div>
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
           open={open}
-          className={charStyles.message}
+          className={halfStyles.message}
           onClose={handleClose}
           message="复制成功"
         />
       </main>
 
       <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <img src="./vercel.svg" alt="Vercel" className={styles.logo} />
-        </a>
-        <a href='https://www.skylinebin.com' target="_blank" className={charStyles.power}>
+        <a href='https://www.skylinebin.com' target="_blank" className={halfStyles.power}>
          @SkylineBin for GSM
         </a>
       </footer>
 
       <style jsx>{`
         main {
-          padding: 5rem 0;
+          padding: 2rem 0;
           flex: 1;
           width: 100%;
           display: flex;
           flex-direction: column;
           justify-content: flex-start;
           align-items: center;
+          background: #c9d6ff;  /* fallback for old browsers */
+          background: -webkit-linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226));  /* Chrome 10-25, Safari 5.1-6 */      
+          background: linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */      
         }
         footer {
           width: 100%;
@@ -129,6 +152,9 @@ export default function Home() {
           display: flex;
           justify-content: center;
           align-items: center;
+          background: #c9d6ff;  /* fallback for old browsers */
+          background: -webkit-linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226));  /* Chrome 10-25, Safari 5.1-6 */      
+          background: linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */    
         }
         footer img {
           margin-left: 0.5rem;
