@@ -141,9 +141,9 @@ export default function Home() {
           flex-direction: column;
           justify-content: flex-start;
           align-items: center;
-          background: #c9d6ff;  /* fallback for old browsers */
+          /* background: #c9d6ff;  /* fallback for old browsers */
           background: -webkit-linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226));  /* Chrome 10-25, Safari 5.1-6 */      
-          background: linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */      
+          background: linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */       */
         }
         footer {
           width: 100%;
@@ -152,9 +152,6 @@ export default function Home() {
           display: flex;
           justify-content: center;
           align-items: center;
-          background: #c9d6ff;  /* fallback for old browsers */
-          background: -webkit-linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226));  /* Chrome 10-25, Safari 5.1-6 */      
-          background: linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */    
         }
         footer img {
           margin-left: 0.5rem;
