@@ -1,14 +1,14 @@
 import Head from "next/head";
 import * as React from "react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { HighlightWithinTextarea } from 'react-highlight-within-textarea'
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
+import { Alert } from "@mui/material";
 import Clipboard from "clipboard";
 import diffStyles from "../../styles/diff.module.css";
 import { diffStrings } from "../../src/utils/diff";
-import { Alert } from "@mui/material";
 
 export default function Diff() {
   const [textInput, setTextInput] = useState("");
