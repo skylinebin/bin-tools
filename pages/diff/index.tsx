@@ -6,12 +6,14 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import Clipboard from "clipboard";
-import halfStyles from "../../styles/half.module.css";
-import { CharType, convertLabelCharCode } from "../../src/utils/charcode";
+import diffStyles from "../../styles/diff.module.css";
+import { diffStrings } from "../../src/utils/diff";
+import { Alert } from "@mui/material";
 
-export default function Home() {
+export default function Diff() {
   const [textInput, setTextInput] = useState("");
   const [afterTextInput, setAfterTextInput] = useState("");
+  const [diffTexts, setDiffTexts] = useState("");
   const [highlights, setHighlights] = useState([]);
 
   const [open, setOpen] = useState(false);
@@ -24,28 +26,37 @@ export default function Home() {
     setOpen(false);
   };
 
-  const handleConvertClick = useCallback((val: string) => {
-    const { str, list } = convertLabelCharCode(val, CharType.HalfToFull);
-    const hs = [];
-    list.map((item) => hs.push([item,item+1]));
-    setHighlights([...hs]);
-    setAfterTextInput(str);
+  const handleDiffClick = useCallback((val: string, val2: string) => {
+    const res = diffStrings(val, val2);
+    const hls = [];
+    let resStr = '';
+    let count = 0;
+    Object.values(res).map((item: any) => {
+      console.info('value:', item);
+      if(item.added || item.removed) {
+        hls.push({
+          highlight: [count, count + item.count],
+          className: item.added ? diffStyles.green: diffStyles.red
+        });
+      }
+      resStr += item.value;
+      count += item.count;
+    });
+    setDiffTexts(resStr);
+    setHighlights([...hls])
   }, []);
 
   const handleTextInputChange = (event) => {
     setTextInput(event.target.value);
-    setTimeout(()=>{
-        handleConvertClick(event.target.value);
-    }, 100);
   };
 
   const handleBtnClick = useCallback(() =>{
-    handleConvertClick(textInput);
-  }, [textInput]);
+    handleDiffClick(textInput, afterTextInput);
+  }, [textInput, afterTextInput]);
 
 
-  const handleAfterTextInputChange = (event) => {
-    setAfterTextInput(event);
+  const handleAfterChange = (value) => {
+    setAfterTextInput(value.target.value);
   };
   const handleCopyClick = useCallback(() => {
     const copy = new Clipboard(".copy-btn");
@@ -63,77 +74,99 @@ export default function Home() {
   }, []);
 
   return (
-    <div className={halfStyles.container}>
+    <div className={diffStyles.container}>
       <Head>
-        <title>快来帮小朋友揪出所有半角符号吧~</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>快来文本找不同~</title>
+        <link rel="icon" href="/bingxiang.ico" />
       </Head>
 
       <main>
-        <h1 className={halfStyles.title}>揪出所有半角符号</h1>
-        <div className={halfStyles.texts}>
+        <h1 className={diffStyles.title}>让我康康是谁动了我的稿子！！</h1>
+        <div className={diffStyles.texts}>
           <TextField
-            // inputRef={valRef}
             id="outlined-multiline-static"
-            label="Before"
-            className={halfStyles.text}
+            label="文本原稿"
+            className={diffStyles.text}
             multiline
-            rows={25}
-            min-rows={25}
+            rows={18}
+            min-rows={18}
             value={textInput}
             onChange={handleTextInputChange}
             color="secondary"
           />
-          <div className={halfStyles.textRight}>
+          <TextField
+            id="outlined-multiline-static"
+            label="修改稿"
+            className={diffStyles.textRight}
+            style={{
+              marginLeft: '2vw'
+            }}
+            multiline
+            rows={18}
+            min-rows={18}
+            value={afterTextInput}
+            onChange={handleAfterChange}
+            color="info"
+          />
+        </div>
+        {
+          diffTexts && (<>       
+          <div className={diffStyles.diffRes}>
             <HighlightWithinTextarea
-                value={afterTextInput}
+                value={diffTexts}
                 highlight={highlights}
                 placeholder=""
                 readOnly={true}
-                // onChange={handleAfterTextInputChange}
             />
           </div>
-        </div>
-        <div className={halfStyles.buttons}>
+          <div className={diffStyles.tips}>Tips：<span className={diffStyles.green}>绿色</span>内容为新增内容，<span className={diffStyles.red}>红色</span>内容为删除内容~</div>
+          </>
+          )
+        }
+        <div className={diffStyles.buttons}>
           <Button
             variant="contained"
             color="info"
             onClick={handleBtnClick}
-            className={halfStyles.button}
+            className={diffStyles.button}
           >
-            快揪出它(´・ω・`)
+            来找不同吧(´・ω・`)
           </Button>
           <Button
             data-clipboard-text={afterTextInput}
             variant="contained"
             color="secondary"
             onClick={handleCopyClick}
-            className={`${halfStyles.copybutton} copy-btn`}
+            className={`${diffStyles.copybutton} copy-btn`}
             style={{
               marginLeft: '20px'
             }}
           >
-            复制成稿 ♡.∩▂∩.♡ 
+            复制修改稿 ♡.∩▂∩.♡ 
           </Button>
         </div>
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
           open={open}
-          className={halfStyles.message}
+          className={diffStyles.message}
           onClose={handleClose}
-          message="复制成功"
-        />
+          // message="复制成功"
+        >
+            <Alert severity="success" sx={{ width: '100%' }}>
+            复制成功
+            </Alert>
+        </Snackbar>
       </main>
 
       <footer>
-        <a href='https://www.skylinebin.com' target="_blank" className={halfStyles.power}>
+        <a href='https://www.skylinebin.com' target="_blank" className={diffStyles.power}>
          @SkylineBin for GSM
         </a>
       </footer>
 
       <style jsx>{`
         main {
-          padding: 2rem 0;
+          padding: 2rem 0 1.5rem;
           flex: 1;
           width: 100%;
           display: flex;
@@ -146,7 +179,7 @@ export default function Home() {
         }
         footer {
           width: 100%;
-          height: 100px;
+          height: 80px;
           border-top: 1px solid #eaeaea;
           display: flex;
           justify-content: center;
