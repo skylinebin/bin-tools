@@ -36,3 +36,11 @@ button {
   padding: 0.5rem 1rem;
   font-weight: bold;
 }
+
+textArea {
+  width: 40vw;
+}
+
+#outlined-multiline-static::-webkit-scrollbar {
+  display: none;
+}

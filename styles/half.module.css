@@ -35,13 +35,20 @@
   .text {
     width: 40vw;
   }
+
   .textRight {
     width: 40vw;
     margin-left: 2vw;
     padding: 16.5px 14px;
     border: #01579b solid 2px;
     border-radius: 4px;
+    height: 608px;
+    overflow-y: auto;
   }
+
+  .textRight::-webkit-scrollbar {
+    display: none;
+}
 
 .buttons {
     display: flex;

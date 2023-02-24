@@ -5,14 +5,19 @@ import { HighlightWithinTextarea } from 'react-highlight-within-textarea'
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import Clipboard from "clipboard";
+
 import halfStyles from "../../styles/half.module.css";
 import { CharType, convertLabelCharCode } from "../../src/utils/charcode";
+import { useSyncScrollerEffect } from "../../src/hooks/useScrollEffect";
 
 export default function Home() {
   const [textInput, setTextInput] = useState("");
   const [afterTextInput, setAfterTextInput] = useState("");
   const [highlights, setHighlights] = useState([]);
+  const valRef = useRef(null);
+  const secRef = useRef(null);
 
   const [open, setOpen] = useState(false);
 
@@ -23,6 +28,8 @@ export default function Home() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  useSyncScrollerEffect([valRef,secRef], null);
 
   const handleConvertClick = useCallback((val: string) => {
     const { str, list } = convertLabelCharCode(val, CharType.HalfToFull);
@@ -44,8 +51,9 @@ export default function Home() {
   }, [textInput]);
 
 
-  const handleAfterTextInputChange = (event) => {
-    setAfterTextInput(event);
+  const handleClearClick = () => {
+    setTextInput('');
+    handleConvertClick('');
   };
   const handleCopyClick = useCallback(() => {
     const copy = new Clipboard(".copy-btn");
@@ -73,7 +81,7 @@ export default function Home() {
         <h1 className={halfStyles.title}>揪出所有半角符号</h1>
         <div className={halfStyles.texts}>
           <TextField
-            // inputRef={valRef}
+            inputRef={valRef}
             id="outlined-multiline-static"
             label="Before"
             className={halfStyles.text}
@@ -84,13 +92,12 @@ export default function Home() {
             onChange={handleTextInputChange}
             color="secondary"
           />
-          <div className={halfStyles.textRight}>
+          <div ref={secRef} className={halfStyles.textRight}>
             <HighlightWithinTextarea
                 value={afterTextInput}
                 highlight={highlights}
                 placeholder=""
                 readOnly={true}
-                // onChange={handleAfterTextInputChange}
             />
           </div>
         </div>
@@ -115,14 +122,30 @@ export default function Home() {
           >
             复制成稿 ♡.∩▂∩.♡ 
           </Button>
+          <Button
+            data-clipboard-text={afterTextInput}
+            variant="contained"
+            color="error"
+            onClick={handleClearClick}
+            className={`${halfStyles.copybutton} copy-btn`}
+            style={{
+              marginLeft: '20px'
+            }}
+          >
+            清空内容 ◑▽◐
+          </Button>
         </div>
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
           open={open}
           className={halfStyles.message}
           onClose={handleClose}
-          message="复制成功"
-        />
+          // message="复制成功"
+        >
+           <Alert severity="success" sx={{ width: '100%' }}>
+            复制成功
+            </Alert>
+        </Snackbar>
       </main>
 
       <footer>
@@ -144,6 +167,7 @@ export default function Home() {
           background: -webkit-linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226));  /* Chrome 10-25, Safari 5.1-6 */      
           background: linear-gradient(to right, rgb(201, 214, 255), rgb(226, 226, 226)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */       */
         }
+
         footer {
           width: 100%;
           height: 100px;
@@ -167,8 +191,7 @@ export default function Home() {
           border-radius: 5px;
           padding: 0.75rem;
           font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+          font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
         }
       `}</style>
 
@@ -180,9 +203,14 @@ export default function Home() {
           font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
             Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
             sans-serif;
+          overflow: hidden;
         }
         * {
           box-sizing: border-box;
+        }
+
+        textarea::-webkit-scrollbar {
+            display: none;
         }
       `}</style>
     </div>
