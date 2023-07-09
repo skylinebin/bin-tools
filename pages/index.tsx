@@ -19,14 +19,14 @@ export default function Home() {
         </p>
 
         <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
+          <a href="/half" className={styles.card}>
+            <h3>Checking half-width symbol  &rarr;</h3>
+            <p>Check for half-width symbols present in the article.</p>
           </a>
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
+          <a href="/diff" className={styles.card}>
+            <h3>Comparing differences in text &rarr;</h3>
+            <p>Compare the differences between the two pieces of text!</p>
           </a>
 
           <a

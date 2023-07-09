@@ -72,6 +72,11 @@ export default function Diff() {
       console.error("Trigger:", e.trigger);
     });
   }, []);
+  const handleClearClick = () => {
+    setTextInput('');
+    setAfterTextInput('');
+    setDiffTexts('');
+  };
 
   return (
     <div className={diffStyles.container}>
@@ -143,6 +148,18 @@ export default function Diff() {
             }}
           >
             复制修改稿 ♡.∩▂∩.♡ 
+          </Button>
+          <Button
+            data-clipboard-text={afterTextInput}
+            variant="contained"
+            color="error"
+            onClick={handleClearClick}
+            className={`${diffStyles.copybutton} copy-btn`}
+            style={{
+              marginLeft: '20px'
+            }}
+          >
+            清空内容 ◑▽◐
           </Button>
         </div>
         <Snackbar
