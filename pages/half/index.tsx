@@ -78,7 +78,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <h1 className={halfStyles.title}>揪出所有半角符号</h1>
+        <h1 className={halfStyles.title}>快来帮小朋友揪出所有半角符号~</h1>
         <div className={halfStyles.texts}>
           <TextField
             inputRef={valRef}
